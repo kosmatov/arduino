@@ -1,0 +1,7 @@
+{
+  "cpu": {
+    "fqbn": "arduino:avr:nano",
+    "port": "/dev/ttyUSB0"
+  },
+  "programmer": "arduinoasisp"
+}
