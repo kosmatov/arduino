@@ -3,21 +3,22 @@
 #define SERIAL_RATE 19200
 
 SoftwareSerial co2_serial(PIN_PD2, PIN_PD3);
+
 // CO2 sensor data structures:
 byte cmd[9] = {0xFF,0x01,0x86,0x00,0x00,0x00,0x00,0x00,0x79}; 
 unsigned char co2_resp[9];
 byte crc = 0;
 unsigned int ppm = 0;
+
 bool led_state = false;
-bool led_states[6] = {false, false, false, false, false, false};
-byte led_pins[4] = {PIN_PD4, PIN_PD5, PIN_PD6, PIN_PD7};
+byte led_pins[4] = {2, 3, 4, 5};
 
 void setup() {
   Serial.begin(SERIAL_RATE);
   while(!Serial);
   co2_serial.begin(9600);
 
-  for (byte i = 0; i < 6; i ++) pinMode(led_pins[i], OUTPUT);
+  for (byte i = 0; i < sizeof(led_pins); i ++) pinMode(led_pins[i], OUTPUT);
   digitalWrite(led_pins[0], HIGH);
 }
 
@@ -67,7 +68,9 @@ String message(unsigned int ppm) {
 }
 
 void set_pin_state(unsigned int ppm) {
-  for (byte i = 0; i < 4; i ++) digitalWrite(led_pins[i], LOW);
+  for (byte i = 0; i < sizeof(led_pins); i ++) {
+    digitalWrite(led_pins[i], LOW);
+  }
 
   byte offset = 0;
 
