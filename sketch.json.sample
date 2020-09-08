@@ -1,7 +1,7 @@
 {
   "cpu": {
-    "fqbn": "arduino:avr:nano:cpu=atmega168",
+    "fqbn": "arduino:avr:nano",
     "port": "/dev/ttyUSB0",
-    "programmer": ""
-  }
+  },
+  "programmer": "stk500"
 }
