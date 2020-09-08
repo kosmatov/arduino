@@ -1,0 +1,7 @@
+{
+  "cpu": {
+    "fqbn": "MiniCore:avr:8:bootloader=no_bootloader",
+    "port": "/dev/ttyUSB0"
+  },
+  "programmer": "arduinoasisp"
+}
