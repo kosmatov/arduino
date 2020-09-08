@@ -2,7 +2,7 @@
 
 #define SERIAL_RATE 19200
 
-SoftwareSerial co2_serial(PIN_PD2, PIN_PD3);
+SoftwareSerial co2_serial(6, 7);
 
 // CO2 sensor data structures:
 byte cmd[9] = {0xFF,0x01,0x86,0x00,0x00,0x00,0x00,0x00,0x79}; 
@@ -11,7 +11,7 @@ byte crc = 0;
 unsigned int ppm = 0;
 
 bool led_state = false;
-byte led_pins[4] = {2, 3, 4, 5};
+byte led_pins[4] = {14, 15, 16, 17};
 
 void setup() {
   Serial.begin(SERIAL_RATE);
