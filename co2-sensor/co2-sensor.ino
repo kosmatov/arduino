@@ -2,7 +2,7 @@
 
 #define SERIAL_RATE 19200
 
-SoftwareSerial co2_serial(6, 7);
+SoftwareSerial co2_serial(2, 3);
 
 // CO2 sensor data structures:
 byte cmd[9] = {0xFF,0x01,0x86,0x00,0x00,0x00,0x00,0x00,0x79}; 
