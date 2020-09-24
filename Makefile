@@ -26,6 +26,10 @@ boardlist:
 build upload clean monitor proglist:
 	@echo "Run in project directory"
 
+details:
+	@echo $(if $(name),"Details for $(name)","Details for arduino:avr:nano. Use \`make details name=<board name>\` for another board details. Use \`make boardlist\` to get a list of available boards")
+	$(CONSOLE) arduino-cli board details --fqbn$(if $(name), $(name), arduino:avr:nano)
+
 console:
 	$(CONSOLE)
 
