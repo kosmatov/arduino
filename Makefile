@@ -1,7 +1,7 @@
-.PHONY: all core
+.PHONY: all
 
 CONSOLE := docker-compose run -w /app/projects --rm console
-# MAKEFLAGS += --silent
+MAKEFLAGS += --silent
 
 all:
 	@echo "Use \"make help\" to list available commands"
@@ -15,11 +15,12 @@ help:
 	@echo "  core install name=<core name>     Install arduino core"
 	@echo "  core list                         List installed arduino cores"
 	@echo "  core search [name=<core name>]    Search arduino cores"
-	@echo "  core uninstall [name=<core name>] Uninstall arduino cores"
+	@echo "  core uninstall name=<core name>   Uninstall arduino cores"
 	@echo
 	@echo "  lib install name=<lib name>       Install arduino lib"
 	@echo "  lib list                          List installed arduino libs"
 	@echo "  lib search [name=<lib name>]      Search arduino libs"
+	@echo "  lib uninstall name=<lib name>     Uninstall arduino cores"
 	@echo
 	@echo "  upgrade                           Upgrade arduino cores & libs"
 	@echo
@@ -34,7 +35,7 @@ container:
 core lib board:
 	$(MAKE) $(shell echo $(MAKECMDGOALS) | tr ' ' _)$(if $(name), name="$(name)",)
 
-core_list core_search core_install core_upgrade core_uninstall lib_list lib_search lib_install lib_upgrade:
+core_list core_search core_install core_upgrade core_uninstall lib_list lib_search lib_install lib_uninstall lib_upgrade:
 ifneq ($(MAKECMDGOALS:search=), $(MAKECMDGOALS))
 	@echo "Use \`make core search name=<core name>\` to filter search results"
 	@echo
