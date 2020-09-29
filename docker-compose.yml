@@ -12,7 +12,6 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - /dev:/dev
       - .:/app:cached
       - ~/.bash_history:/root/.bash_history
     working_dir: /app

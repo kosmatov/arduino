@@ -1,6 +1,7 @@
-CONSOLE := docker-compose run --rm -w /app/$(shell basename $(shell pwd)) console
+PROJECT_NAME ?= $(shell basename $(shell pwd))
+DEVPORT ?= $(shell ls /dev | grep ttyUSB | head -1) 
+CONSOLE := docker-compose -f ../../docker-compose.yml$(if $(DEVPORT), -f ../../docker-compose.devices.yml,) run -w /app/projects/$(PROJECT_NAME) --rm console
 ARDUCLI := $(CONSOLE) arduino-cli
-DEVPORT := $(shell cat sketch.json | grep port | cut -d'"' -f4)
 FQBN := $(shell cat sketch.json | grep fqbn | cut -d'"' -f4)
 PROG ?= $(shell cat sketch.json | grep programmer | cut -d'"' -f4) # Use "make proglist" to list programmers
 
@@ -43,8 +44,7 @@ bootloader:
 	$(ARDUCLI) burn-bootloader -v -p $(DEVPORT) --programmer $(PROG) --fqbn $(FQBN)
 
 monitor:
-	@echo "\"Ctrl-a k\" to exit"
-	$(CONSOLE) screen $(DEVPORT); exit
+	$(CONSOLE) python3 python.serial.miniterm
 
 console:
 	$(CONSOLE)
