@@ -13,6 +13,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app:cached
+      - /tmp:/tmp
       - ~/.bash_history:/root/.bash_history
     working_dir: /app
     logging: *logging

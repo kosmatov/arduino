@@ -1,0 +1,59 @@
+define CLI_HELP
+  board search [name=<board name>]  Search arduino boards
+
+  core install name=<core name>     Install arduino core
+  core list                         List installed arduino cores
+  core search [name=<core name>]    Search arduino cores
+  core uninstall name=<core name>   Uninstall arduino cores
+
+  lib install name=<lib name>       Install arduino lib
+  lib list                          List installed arduino libs
+  lib search [name=<lib name>]      Search arduino libs
+  lib uninstall name=<lib name>     Uninstall arduino cores
+
+  upgrade                           Upgrade arduino cores & libs
+  console                           Enter docker container
+  examples search                   Search examples
+endef
+
+export CLI_HELP
+
+core lib board examples:
+	$(MAKE) $(shell echo $(MAKECMDGOALS) | tr ' ' _)$(if $(name), name="$(name)",)
+
+core_list core_search core_install core_upgrade core_uninstall lib_list lib_search lib_install lib_uninstall lib_upgrade:
+ifneq ($(MAKECMDGOALS:search=), $(MAKECMDGOALS))
+	@echo "Use \`make core search name=<core name>\` to filter search results"
+	@echo
+endif
+ifneq ($(MAKECMDGOALS:install=), $(MAKECMDGOALS))
+	ifdef name
+	$(eval CHOWN := 1)
+else
+	@echo "Use \`make core install name=<core name>\`. Use \`make core search\` to search available cores"
+	@echo
+	$(eval IGNORE := 1)
+endif
+ifndef IGNORE
+	$(CONSOLE) arduino-cli $(shell echo $@ | tr _ ' ')$(if $(name), "$(name)",)
+	$(if $(CHOWN),$(CONSOLE) chown -R $(shell echo $$UID) ../vendor/,)
+endif
+
+board_search:
+	$(CONSOLE) arduino-cli board listall$(if $(name), | grep -i $(name),)
+
+board_details:
+ifndef name
+	$(eval name := $(FQBN))
+endif
+	@echo $(if $(name),"Details for $(name)","Details for arduino:avr:nano. Use \`make details name=<board name>\` for another board details. Use \`make boardlist\` to get a list of available boards")
+	$(CONSOLE) arduino-cli board details --fqbn$(if $(FQBN), $(FQBN), arduino:avr:nano)
+
+examples_search:
+	find vendor/ -name examples -print$(if $(name), | grep -i $(name),)
+
+list install uninstall search details:
+
+upgrade:
+	$(CONSOLE) arduino-cli update
+	$(CONSOLE) arduino-cli upgrade
