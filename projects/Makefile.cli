@@ -27,8 +27,9 @@ ifneq ($(MAKECMDGOALS:search=), $(MAKECMDGOALS))
 	@echo
 endif
 ifneq ($(MAKECMDGOALS:install=), $(MAKECMDGOALS))
-	ifdef name
+ifdef name
 	$(eval CHOWN := 1)
+endif
 else
 	@echo "Use \`make core install name=<core name>\`. Use \`make core search\` to search available cores"
 	@echo
@@ -36,7 +37,7 @@ else
 endif
 ifndef IGNORE
 	$(CONSOLE) arduino-cli $(shell echo $@ | tr _ ' ')$(if $(name), "$(name)",)
-	$(if $(CHOWN),$(CONSOLE) chown -R $(shell echo $$UID) ../vendor/,)
+	$(if $(CHOWN),$(CONSOLE) chown -R $(shell echo $$UID) ../../vendor/,)
 endif
 
 board_search:

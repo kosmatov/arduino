@@ -31,19 +31,17 @@ help:
 build:
 	 $(CONSOLE) arduino-cli compile -v --build-cache-path /app/.cache --fqbn $(FQBN)
 
-docker-compose.devices.yml:
-	@echo "version: '3.8'" > $@
-	@echo "services:" >> $@
-	@echo "  console:" >> $@
-	@echo "    devices: [/dev/$(DEVPORT):/dev/$(DEVPORT)]" >> $@
-
-upload flash: docker-compose.devices.yml
+upload flash: docker-compose.devices.yml pause_monitor
 ifndef DEVPORT
 	@echo "Device port not found"
 else
-	$(CONSOLE_WDEV) arduino-cli upload -v -p /dev/$(DEVPORT) --fqbn $(FQBN) $(if $(PROG),--programmer "$(PROG)",)
+ifneq ($(strip $(PROG)),)
+	$(eval PROGRAMMER := --programmer $(PROG))
+endif
+	$(CONSOLE_WDEV) arduino-cli upload -v -p /dev/$(DEVPORT) --fqbn $(FQBN) $(PROGRAMMER)
 	rm docker-compose.devices.yml
 endif
+	$(MAKE) unpause_monitor
 
 clean:
 	$(CONSOLE) rm -fr build/ docker-compose.devices.yml
@@ -63,8 +61,25 @@ monitor: docker-compose.devices.yml
 ifndef DEVPORT
 	@echo "Device port not found"
 else
-	$(CONSOLE_WDEV) python3 -m serial.tools.miniterm /dev/$(DEVPORT)
+	$(eval BAUDRATE ?= $(shell cat sketch.json | grep baudrate | cut -d':' -f2))
+	$(CONSOLE_WDEV) python3 -m serial.tools.miniterm /dev/$(DEVPORT) $(BAUDRATE)
 	rm docker-compose.devices.yml
+endif
+
+MONITOR_CONTAINER := $(shell docker ps | grep arduino | grep python)
+
+pause_monitor:
+ifneq ($(strip $(MONITOR_CONTAINER)),)
+ifeq ($(findstring Paused,$(MONITOR_CONTAINER)),)
+	docker pause $(word 1,$(MONITOR_CONTAINER))
+endif
+endif
+
+unpause_monitor:
+ifneq ($(strip $(MONITOR_CONTAINER)),)
+ifeq ($(findstring Paused,$(MONITOR_CONTAINER)),Paused)
+	docker unpause $(word 1,$(MONITOR_CONTAINER))
+endif
 endif
 
 console:
