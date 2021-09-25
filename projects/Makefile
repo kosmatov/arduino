@@ -28,11 +28,21 @@ help:
 	@echo "  board details [name=<FQBN>]       Board details"
 	@echo "$$CLI_HELP"
 
+docker-compose.devices.yml:
+ifeq ($(strip $(DEVPORT)),)
+	@echo "Device port not found"
+else
+	@echo "version: '3.8'" > $@
+	@echo "services:" >> $@
+	@echo "  console:" >> $@
+	@echo "    devices: [/dev/$(DEVPORT):/dev/$(DEVPORT)]" >> $@
+endif
+
 build:
 	 $(CONSOLE) arduino-cli compile -v --build-cache-path /app/.cache --fqbn $(FQBN)
 
 upload flash: docker-compose.devices.yml pause_monitor
-ifndef DEVPORT
+ifeq ($(strip $(DEVPORT)),)
 	@echo "Device port not found"
 else
 ifneq ($(strip $(PROG)),)
